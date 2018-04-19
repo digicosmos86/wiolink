@@ -10,4 +10,3 @@ from machine import Pin
 #wlan = wifimgr.get_connection()
 
 p = Pin(13, Pin.OUT)
-
