@@ -1,4 +1,4 @@
-from machine import Pin, I2C
+import machine
 
 PORT_MAPPING = {
     1: 14,
@@ -17,10 +17,12 @@ DEFAULT_PORTS = {
     "Relay": 1,
     "Servo": 2,
     "GrowLight": 2,
-    "OledScreen": 6
+    "OledScreen": 6,
+    "Led": 1,
+    "Button": 2
 }
 
-i2c = I2C(scl=Pin(5), sda=Pin(4))
+i2c = machine.I2C(scl=machine.Pin(5), sda=machine.Pin(4))
 
 class GroveDevice:
     
@@ -28,7 +30,6 @@ class GroveDevice:
         self.check_port(type, port)
         self.type = type
         self.port = port
-        self.name = "{0}@Port{1}".format(type, port)
 
     def check_port(self, type, port):
         if type == "MoistureSensor" and port != 4:

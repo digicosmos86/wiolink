@@ -1,14 +1,14 @@
-from machine import Pin
+from machine import Pin, PWM
 from ssd1306 import SSD1306_I2C
+from neopixel import NeoPixel
 from wio_link import PORT_MAPPING, DEFAULT_PORTS, GroveDevice, i2c
+from time import sleep_ms
 
 class Display(GroveDevice):
 
     def __init__(self, type, port):
         GroveDevice.__init__(self, type, port)
 
-    def write_message(self, line):
-        pass
 
 class OledScreen(Display, SSD1306_I2C):
     
@@ -45,3 +45,67 @@ class OledScreen(Display, SSD1306_I2C):
 
     def show_sensor_data(self, sensor, line):
         sensor.show_data(self, line)
+
+class GrowLight(Display, NeoPixel):
+    def __init__(self, port=DEFAULT_PORTS["GrowLight"], n=60, on=True):
+        Display.__init__(self, "GrowLight", port)
+        NeoPixel.__init__(self, pin=Pin(PORT_MAPPING[port]), n=n)
+        if on:
+            self._on=on
+            self.on()
+        self._on=False
+
+    def on(self):
+        if not self._on:
+            blue_modulo = 3
+            for i in range(self.n):
+                NeoPixel.__setitem__(self, i, (255, 0, 0))
+                if i % blue_modulo == 0:
+                    NeoPixel.__setitem__(self, i, (61, 0, 255))
+            NeoPixel.write(self)
+
+    def off(self):
+        if self._on:
+            NeoPixel.fill(self, (0, 0, 0))
+            NeoPixel.write(self)
+            self._on=False
+
+    def is_on(self):
+        on = self._on
+        return on
+
+
+class Led(Display):
+    def __init__(self, port=DEFAULT_PORTS["Led"], on=True):
+        Display.__init__(self, "Led", port)
+        if on:
+            self.led = PWM(Pin(PORT_MAPPING[port]), freq=50, duty=1023)
+        else:
+            self.led = PWM(Pin(PORT_MAPPING[port]), freq=50, duty=0)
+        self._on = on
+    
+    def on(self, fade=False, duration=1):
+        if self._on:
+            return
+        if fade:
+            for i in range(50):
+                self.led.duty(int(1023*((i+1)/50)))
+                sleep_ms(int(duration*1000/50))
+        else:
+            self.led.duty(1023)
+        self._on=True
+    
+    def off(self, fade=False, duration=1):
+        if not self._on:
+            return
+        if fade:
+            for i in range(50):
+                self.led.duty(1023-int(1023*((i+1)/50)))
+                sleep_ms(int(duration*1000/50))
+        else:
+            self.led.duty(0)
+        self._on=False
+
+    def is_on(self):
+        on = self._on
+        return on

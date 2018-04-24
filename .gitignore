@@ -1,3 +1,6 @@
 .idea
 test
 test/*
+.vagrant
+.vagrant/*
+*.log

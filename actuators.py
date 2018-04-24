@@ -1,11 +1,11 @@
+import gc
 from machine import Pin, PWM
-from neopixel import NeoPixel
 from wio_link import PORT_MAPPING, DEFAULT_PORTS, GroveDevice
-
+gc.collect()
 
 class Actuator(GroveDevice):
 
-    def check_port(type, port):
+    def check_port(self, type, port):
 
         if port == 3:
             raise OSError("{0}s cannot be connected to Port 3. Please try Ports 1, 2".format(type))
@@ -30,7 +30,7 @@ class Servo(Actuator):
 
     def __init__(self, port=DEFAULT_PORTS["Servo"], position=0):
         Actuator.__init__(self, "Servo", port)
-        self.servo = PWM(Pin(PORT_MAPPING[port]), duty=degree2duty(init_degree), freq=50)
+        self.servo = PWM(Pin(PORT_MAPPING[port]), duty=degree2duty(position), freq=50)
         self.position = position
 
     def set_position(self, degree):
@@ -57,19 +57,16 @@ class Relay(Actuator):
         return self.relay.value()
 
 
-class GrowLight(Actuator, NeoPixel):
-    def __init__(self, port=DEFAULT_PORTS["GrowLight"], n = 60):
-        Actuator.__init__(self, "GrowLight", port)
-        NeoPixel.__init__(self, pin=Pin(PORT_MAPPING[port]), n=n)
+class Button(Actuator):
+    def __init__(self, port=DEFAULT_PORTS["Button"]):
+        Actuator.__init__(self, "Button", port)
+        self.pin = Pin(PORT_MAPPING[port], Pin.IN, Pin.PULL_UP)
 
-    def on(self):
-        blue_modulo = 3
-        for i in range(self.n):
-            NeoPixel.__setitem__(self, i, (255, 0, 0))
-            if i % blue_modulo == 0:
-                NeoPixel.__setitem__(self, i, (61, 0, 255))
-        NeoPixel.write(self)
+    def is_pressed(self):
+        return True if self.pin.value() == 1 else False
 
-    def off(self):
-        NeoPixel.fill(self, (0, 0, 0))
-        NeoPixel.write(self)
+    def on_press(self, callback):
+        self.pin.irq(trigger=Pin.IRQ_RISING, handler=callback)
+
+    def on_release(self, callback):
+        self.pin.irq(trigger=Pin.IRQ_FALLING, handler=callback)
