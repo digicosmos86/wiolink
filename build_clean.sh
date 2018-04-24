@@ -11,5 +11,5 @@ rm micropython/ports/esp8266/scripts/main.py
 cd micropython/ports/esp8266
 make axtls
 make
-sudo rm /vagrant/micropython-1.9.3-wiolink-clean.bin
-cp ./build/firmware-combined.bin /vagrant/micropython-1.9.3-wiolink-clean.bin
+sudo rm /vagrant/firmware/micropython-1.9.3-wiolink-clean.bin
+cp build/firmware-combined.bin /vagrant/firmware/micropython-1.9.3-wiolink-clean.bin
