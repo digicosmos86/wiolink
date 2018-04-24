@@ -5,7 +5,8 @@ from actuators import Relay, Servo
 from displays import OledScreen, GrowLight
 import time
 
-micropython.mem_info(1)
+print("Starting...")
+time.sleep(5)
 
 ## set environment variables
 
