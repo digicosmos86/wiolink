@@ -50,10 +50,9 @@ class GrowLight(Display, NeoPixel):
     def __init__(self, port=DEFAULT_PORTS["GrowLight"], n=60, on=True):
         Display.__init__(self, "GrowLight", port)
         NeoPixel.__init__(self, pin=Pin(PORT_MAPPING[port]), n=n)
+        self._on = False
         if on:
             self.on()
-        else:
-            self._on=False
 
     def on(self):
         if not self._on:
