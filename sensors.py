@@ -80,7 +80,7 @@ class TemperatureSensorPro(Sensor, DHT22):
     def __init__(self, port=DEFAULT_PORTS["TemperatureSensor"]):
         Sensor.__init__(self, "TemperatureSensorPro", port)
         DHT22.__init__(self, Pin(PORT_MAPPING[port]))
-        DHT22.measure()
+        DHT22.measure(self)
         self.last_measure = 0
 
     def _check_refresh(self, min_refresh_rate):
