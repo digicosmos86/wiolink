@@ -35,8 +35,10 @@ class LightSensor(Sensor, TSL2561):
     def show_data(self, screen, line):
         if not isinstance(screen, Display):
             raise TypeError("The 'screen' parameter must be an instance of Display!")
-        msg = ">{0}: {1} lux".format(self.port, TSL2561.read(self))
+        reading = TSL2561.read(self)
+        msg = ">{0}: {1} lux".format(self.port, reading)
         screen.show_line(line, msg)
+        return reading
 
 
 class TemperatureSensor(Sensor, DHT11):
@@ -74,6 +76,7 @@ class TemperatureSensor(Sensor, DHT11):
         reading = self.get_data()
         msg = ">{0}: {1}F {2}%".format(self.port, reading[0], reading[1])
         screen.show_line(line, msg)
+        return reading
 
 
 class TemperatureSensorPro(Sensor, DHT22):
@@ -111,6 +114,7 @@ class TemperatureSensorPro(Sensor, DHT22):
         reading = self.get_data()
         msg = ">{0}: {1}F {2}%".format(self.port, reading[0], reading[1])
         screen.show_line(line, msg)
+        return reading
 
 
 class MoistureSensor(Sensor, ADC):
@@ -127,5 +131,7 @@ class MoistureSensor(Sensor, ADC):
     def show_data(self, screen, line):
         if not isinstance(screen, Display):
             raise TypeError("The 'screen' parameter must be an instance of Display!")
-        msg = ">{0}: {1}".format(self.port, ADC.read(self))
+        reading = ADC.read(self)
+        msg = ">{0}: {1}".format(self.port, reading)
         screen.show_line(line, msg)
+        return reading

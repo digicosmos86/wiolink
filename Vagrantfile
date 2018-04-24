@@ -24,7 +24,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y build-essential git make unrar-free unzip \
                             autoconf automake libtool gcc g++ gperf \
                             flex bison texinfo gawk ncurses-dev libexpat-dev \
-                            python sed libreadline-dev libffi-dev pkg-config \
+                            python sed libreadline-dev libffi-dev pkg-config libtool-bin \
                             help2man python-dev python-serial wget linux-image-extra-$(uname -r)
     echo "Installing Espressif ESP32 toolchain..."
     cd ~
@@ -34,7 +34,7 @@ Vagrant.configure(2) do |config|
     echo "Installing esp-open-sdk, Espressif ESP-IDF, and micropython source..."
     git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
     git clone --recursive https://github.com/espressif/esp-idf.git
-    git clone https://github.com/micropython/micropython.git
+    git clone https://github.com/digicosmos86/wiolink.git
     echo "Finished provisioning, now run 'vagrant ssh' to enter the virtual machine."
   SHELL
 

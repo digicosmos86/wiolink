@@ -26,12 +26,9 @@ screen = OledScreen(6)
 ## main loop
 
 while True:
-    t = temp_sensor.get_temperature()
-    h = temp_sensor.get_humidity()
-    l = light_sensor.get_lux()
 
-    temp_sensor.show_data(screen, 1)
-    light_sensor.show_data(screen, 2)
+    t, h = temp_sensor.show_data(screen, 1)
+    l = light_sensor.show_data(screen, 2)
 
     if t > TEMP_THRESHOLD:
         relay.on()
