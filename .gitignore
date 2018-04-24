@@ -4,3 +4,5 @@ test/*
 .vagrant
 .vagrant/*
 *.log
+.vscode
+.vscode/*
