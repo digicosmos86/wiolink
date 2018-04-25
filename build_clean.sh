@@ -4,6 +4,7 @@ cd micropython
 git submodule update --init
 cd ..
 cp -r umqtt micropython/ports/esp8266/modules
+rm micropython/ports/esp8266/modules/inisetup.py
 cp {wio_link,ssd1306,tsl2561,sensors,actuators,displays,urequests,inisetup}.py micropython/ports/esp8266/modules
 mkdir micropython/ports/esp8266/scripts
 cp boot.py micropython/ports/esp8266/scripts

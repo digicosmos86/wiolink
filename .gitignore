@@ -6,4 +6,4 @@ test/*
 *.log
 .vscode
 .vscode/*
-*.stackdump
+ssh.EXE.stackdump
