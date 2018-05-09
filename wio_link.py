@@ -40,3 +40,6 @@ class GroveDevice:
             raise OSError("The OLED screen is an i2c device. You can only connect it to Port 6 or the I2C hub.")
         if port == 5:
             print("Warning: using Port 5 while programming might cause unexpected problems. Please consider switching the device to other ports.")
+
+    def __str__(self):
+        return "{0} connected at Port {1}".format(self.type, self.port)

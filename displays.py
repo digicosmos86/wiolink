@@ -44,15 +44,13 @@ class OledScreen(Display, SSD1306_I2C):
         self.show()
 
     def show_sensor_data(self, sensor, line):
-        sensor.show_data(self, line)
+        reading = sensor.show_data(self, line)
+        return reading
 
 class GrowLight(Display, NeoPixel):
-    def __init__(self, port=DEFAULT_PORTS["GrowLight"], n=60, on=True):
+    def __init__(self, port=DEFAULT_PORTS["GrowLight"], n=30):
         Display.__init__(self, "GrowLight", port)
         NeoPixel.__init__(self, pin=Pin(PORT_MAPPING[port]), n=n)
-        self._on = False
-        if on:
-            self.on()
 
     def on(self):
         if not self._on:
