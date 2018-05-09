@@ -117,21 +117,21 @@ class TemperatureSensorPro(Sensor, DHT22):
         return reading
 
 
-class MoistureSensor(Sensor, ADC):
+class MoistureSensor(Sensor):
     def __init__(self, port=DEFAULT_PORTS["MoistureSensor"]):
         Sensor.__init__(self, "MoistureSensor", port)
-        ADC.__init__(self, 0)
+        self.pin = ADC(0)
 
     def get_moisture(self):
-        return ADC.read(self)
+        return self.pin.read()
 
     def get_data(self):
-        return ADC.read(self)
+        return self.pin.read(self)
 
     def show_data(self, screen, line):
         if not isinstance(screen, Display):
             raise TypeError("The 'screen' parameter must be an instance of Display!")
-        reading = ADC.read(self)
+        reading = self.pin.read()
         msg = ">{0}: {1}".format(self.port, reading)
         screen.show_line(line, msg)
         return reading
