@@ -41,5 +41,5 @@ class GroveDevice:
         if port == 5:
             print("Warning: using Port 5 while programming might cause unexpected problems. Please consider switching the device to other ports.")
 
-    def __str__(self):
+    def __repr__(self):
         return "{0} connected at Port {1}".format(self.type, self.port)
