@@ -7,3 +7,5 @@ test/*
 .vscode
 .vscode/*
 ssh.EXE.stackdump
+micropython
+micropython/*
