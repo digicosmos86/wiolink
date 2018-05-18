@@ -1,11 +1,9 @@
 .idea
-test
 test/*
-.vagrant
-.vagrant/*
+test
 *.log
-.vscode
 .vscode/*
+.vscode
 ssh.EXE.stackdump
-micropython
 micropython/*
+micropython

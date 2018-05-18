@@ -72,46 +72,52 @@ class GrowLight(Display, NeoPixel):
         return on
 
     def blink(self, color=[255, 255, 255], times=3, interval=0.5):
-        self.off()
-        for i in range(times):
-            NeoPixel.fill(self, color)
-            NeoPixel.write(self)
-            time.sleep(interval)
-            NeoPixel.fill(self, [0, 0, 0])
-            NeoPixel.write(self)
-            time.sleep(interval)
+        try:
+            self.off()
+            for i in range(times):
+                NeoPixel.fill(self, color)
+                NeoPixel.write(self)
+                time.sleep(interval)
+                NeoPixel.fill(self, [0, 0, 0])
+                NeoPixel.write(self)
+                time.sleep(interval)
+        finally:
+            self.off()
 
     def demo(self, program="cycle"):
         self.off()
-        n = self.n
 
-        if program == "cycle":
-            for i in range(4 * n):
-                for j in range(n):
-                    NeoPixel.__setitem__(self, j, [0, 0, 0])
-                NeoPixel.__setitem__(self, i % n, [255, 255, 255])
-                NeoPixel.write(self)
-                time.sleep_ms(25)
-        elif program == "bounce":
-            for i in range(4 * n):
-                for j in range(n):
-                    NeoPixel.__setitem__(self, j, [0, 0, 128])
-                if (i // n) % 2 == 0:
-                    NeoPixel.__setitem__(self, i % n, [0, 0, 0])
-                else:
-                    NeoPixel.__setitem__(self, n - 1 - (i % n), [0, 0, 0])
-                NeoPixel.write(self)
-                time.sleep_ms(60)
-        elif program == "fade":
-            for i in range(0, 4 * 256, 8):
-                for j in range(n):
-                    if (i // 256) % 2 == 0:
-                        val = i & 0xff
+        try:
+            n = self.n
+
+            if program == "cycle":
+                for i in range(4 * n):
+                    for j in range(n):
+                        NeoPixel.__setitem__(self, j, [0, 0, 0])
+                    NeoPixel.__setitem__(self, i % n, [255, 255, 255])
+                    NeoPixel.write(self)
+                    time.sleep_ms(25)
+            elif program == "bounce":
+                for i in range(4 * n):
+                    for j in range(n):
+                        NeoPixel.__setitem__(self, j, [0, 0, 128])
+                    if (i // n) % 2 == 0:
+                        NeoPixel.__setitem__(self, i % n, [0, 0, 0])
                     else:
-                        val = 255 - (i & 0xff)
-                    NeoPixel.__setitem__(self, j, [val, 0, 128])
-                NeoPixel.write(self)
-        self.off()
+                        NeoPixel.__setitem__(self, n - 1 - (i % n), [0, 0, 0])
+                    NeoPixel.write(self)
+                    time.sleep_ms(60)
+            elif program == "fade":
+                for i in range(0, 4 * 256, 8):
+                    for j in range(n):
+                        if (i // 256) % 2 == 0:
+                            val = i & 0xff
+                        else:
+                            val = 255 - (i & 0xff)
+                        NeoPixel.__setitem__(self, j, [val, 0, 128])
+                    NeoPixel.write(self)
+        finally:
+            self.off()
 
 
 class Led(Display):

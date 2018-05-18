@@ -1,9 +1,9 @@
 #!/bin/bash
 
 rm -rf micropython
-git submodule update --init
+git submodule update -f --init
 cd micropython
-git submodule update --init
+git submodule update -f --init
 cd ..
 cp -r umqtt micropython/ports/esp8266/modules
 rm micropython/ports/esp8266/modules/inisetup.py

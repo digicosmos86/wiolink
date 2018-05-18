@@ -19,7 +19,8 @@ DEFAULT_PORTS = {
     "GrowLight": 2,
     "OledScreen": 6,
     "Led": 1,
-    "Button": 2
+    "Button": 2,
+    "Buzzer": 2
 }
 
 i2c = machine.I2C(scl=machine.Pin(5), sda=machine.Pin(4))

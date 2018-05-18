@@ -33,7 +33,7 @@ class NodeRed:
         self.ip = ip
         self.port = port
 
-    def send_http(self, url, data, https=False):
+    def send_http(self, url, data, https=False, debug=True):
         if url[0] != "/":
             url = "/" + url
         if https:
@@ -46,9 +46,12 @@ class NodeRed:
             else:
                 r = urequests.post(address, data=data)
             r.close()
+            if debug:
+                print("Data sent!")
+        except OSError:
+            print("Error! Please check your domain or IP address")
         except:
-            print("Please check your url: {0}".format(address))
-        print("Data sent!")
+            print("Unknown error. Please check with an instructor.")
 
     def __repr__(self):
         return "Node-RED at {0}:{1}".format(self.ip, self.port)
@@ -59,7 +62,7 @@ class BcServer(NodeRed):
     def __init__(self):
         NodeRed.__init__(self, ip="ts.bc.edu", port=1880)
 
-    def send_http(self, data):
+    def send_http(self, data, debug=True):
         address = "http://{0}:{1}/data".format(self.ip, self.port)
         try:
             if isinstance(data, dict):
@@ -67,9 +70,12 @@ class BcServer(NodeRed):
             else:
                 r = urequests.post(address, data=data)
             r.close()
+            if debug:
+                print("Data sent!")
+        except OSError:
+            print("Error! Please check your domain or IP address")
         except:
-            print("Error! Data not sent!")
-        print("Data sent!")
-
+            print("Unknown error. Please check with an instructor.")
+        
     def __repr__(self):
         return "BC Server at {0}:{1}".format(self.ip, self.port)
