@@ -50,13 +50,12 @@ import sys
 #import webrepl
 #webrepl.start()
 
-#import wifimgr
-#wlan = wifimgr.get_connection()
-
 Pin(13, Pin.OUT)
 p = Pin(0, Pin.IN, Pin.PULL_UP)
-if p.value() == 1:
-    sys.exit()
+if p.value() == 0:
+    import network
+    wlan.active(False)
+    raise KeyboardInterrput("Config button pushed. Interrupting execution")
 gc.collect()
 """)
     return vfs

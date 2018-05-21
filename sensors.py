@@ -126,7 +126,7 @@ class MoistureSensor(Sensor):
         return self.pin.read()
 
     def get_data(self):
-        return self.pin.read(self)
+        return self.pin.read()
 
     def show_data(self, screen, line):
         if not isinstance(screen, Display):

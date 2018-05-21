@@ -1,17 +1,16 @@
 #!/bin/bash
 
-cp -r umqtt micropython/ports/esp8266/modules
-rm micropython/ports/esp8266/modules/{wio_link,ssd1306,tsl2561,sensors,actuators,displays,urequests,inisetup,iot}.py
-cp {wio_link,ssd1306,tsl2561,sensors,actuators,displays,urequests,inisetup,iot}.py micropython/ports/esp8266/modules
-rm micropython/ports/esp8266/modules/{dht,ds18x20,onewire,upip,upip_utarfile}.py
-cp micropython/drivers/dht/dht.py micropython/ports/esp8266/modules/dht.py
-cp micropython/drivers/onewire/{ds18x20,onewire}.py micropython/ports/esp8266/modules
-cp micropython/tools/{upip,upip_utarfile}.py micropython/ports/esp8266/modules
-rm -rf micropython/ports/esp8266/scripts
-mkdir micropython/ports/esp8266/scripts
-cp boot.py micropython/ports/esp8266/scripts
-rm micropython/ports/esp8266/scripts/main.py
-cd micropython/ports/esp8266
+cp -r umqtt ~/micropython/ports/esp8266/modules
+rm ~/micropython/ports/esp8266/modules/inisetup.py
+cp {wio_link,ssd1306,tsl2561,sensors,actuators,displays,urequests,inisetup,iot}.py ~/micropython/ports/esp8266/modules
+#rm ~/micropython/ports/esp8266/modules/{dht,ds18x20,onewire,upip,upip_utarfile}.py
+#cp ~/micropython/drivers/dht/dht.py micropython/ports/esp8266/modules/dht.py
+#cp ~/micropython/drivers/onewire/{ds18x20,onewire}.py micropython/ports/esp8266/modules
+#cp micropython/tools/{upip,upip_utarfile}.py micropython/ports/esp8266/modules
+mkdir ~/micropython/ports/esp8266/scripts
+cp boot.py ~/micropython/ports/esp8266/scripts
+rm ~/micropython/ports/esp8266/scripts/main.py
+cd ~/micropython/ports/esp8266
 make clean
 make
 rm ~/wiolink/micropython-1.9.3-wiolink-clean.bin

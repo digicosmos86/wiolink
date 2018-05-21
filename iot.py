@@ -1,6 +1,7 @@
 import network
 import time
 import urequests
+from sensors import Sensor
 
 class WiFi:
     
@@ -59,8 +60,11 @@ class NodeRed:
 
 class BcServer(NodeRed):
     
-    def __init__(self):
+    def __init__(self, team, block):
         NodeRed.__init__(self, ip="ts.bc.edu", port=1880)
+        self.team = team
+        self.block = block
+        self.data = { "team": team, "block": block }
 
     def send_http(self, data, debug=True):
         address = "http://{0}:{1}/data".format(self.ip, self.port)
@@ -76,6 +80,27 @@ class BcServer(NodeRed):
             print("Error! Please check your domain or IP address")
         except:
             print("Unknown error. Please check with an instructor.")
+
+    def send_sensor_data(self, sensor, debug=True):
+        if isinstance(sensor, list):
+            for each_sensor in sensor:
+                self._sensor_to_data(each_sensor)
+        else:
+            self._sensor_to_data(sensor)        
+
+        self.send_http(data=self.data, debug=debug)
         
+    def _sensor_to_data(self, sensor):
+        if not isinstance(sensor, Sensor):
+            raise ValueError("One or more objects are not Sensors!")
+        if "Temp" in sensor.type:
+            t, h = sensor.get_data()
+            self.data["temperature"] = t
+            self.data["humidity"] = h
+        elif sensor.type == "MoistureSensor":
+            self.data["soil"] = sensor.get_data()
+        elif sensor.type == "LightSensor":
+            self.data["lux"] = sensor.get_data()
+    
     def __repr__(self):
         return "BC Server at {0}:{1}".format(self.ip, self.port)
