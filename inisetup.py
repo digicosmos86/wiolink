@@ -41,21 +41,18 @@ def setup():
     uos.mount(vfs, '/')
     with open("boot.py", "w") as f:
         f.write("""\
-# This file is executed on every boot (including wake-boot from deepsleep)
-#import esp
-#esp.osdebug(None)
 import gc
 from machine import Pin
-import sys
-#import webrepl
-#webrepl.start()
-
+import time
 Pin(13, Pin.OUT)
 p = Pin(0, Pin.IN, Pin.PULL_UP)
+time.sleep(0.5)
 if p.value() == 0:
     import network
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)    
     wlan.active(False)
-    raise KeyboardInterrput("Config button pushed. Interrupting execution")
+    raise OSError("WiFi reset and execution of main.py interrupted.")
 gc.collect()
 """)
     return vfs

@@ -1,7 +1,9 @@
 import network
 import time
 import urequests
+import re
 from sensors import Sensor
+from utime import ticks_ms
 
 class WiFi:
     
@@ -60,11 +62,12 @@ class NodeRed:
 
 class BcServer(NodeRed):
     
-    def __init__(self, team, block):
+    def __init__(self, team):
+        if re.search("[we][abce]1?[0-9]$", team) is None:
+            raise ValueError("Please set your team name in the format of 'wa1'")
         NodeRed.__init__(self, ip="ts.bc.edu", port=1880)
-        self.team = team
-        self.block = block
-        self.data = { "team": team, "block": block }
+        self.data = { "team": team }
+        self.last = None
 
     def send_http(self, data, debug=True):
         address = "http://{0}:{1}/data".format(self.ip, self.port)
@@ -82,13 +85,16 @@ class BcServer(NodeRed):
             print("Unknown error. Please check with an instructor.")
 
     def send_sensor_data(self, sensor, debug=True):
-        if isinstance(sensor, list):
-            for each_sensor in sensor:
-                self._sensor_to_data(each_sensor)
-        else:
-            self._sensor_to_data(sensor)        
-
-        self.send_http(data=self.data, debug=debug)
+        now = ticks_ms()
+        if self.last is None or now - self.last >= 10000:
+            if isinstance(sensor, list):
+                for each_sensor in sensor:
+                    self._sensor_to_data(each_sensor)
+            else:
+                self._sensor_to_data(sensor)
+            
+            self.send_http(data=self.data, debug=debug)
+            self.last = ticks_ms()
         
     def _sensor_to_data(self, sensor):
         if not isinstance(sensor, Sensor):
