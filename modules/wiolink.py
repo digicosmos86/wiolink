@@ -16,6 +16,9 @@ DEFAULT_PORTS = {
     "WaterTempSensor": 3,
     "DistanceSensor": 1,
     "MotionSensor": 2,
+    "WaterSensorAnalog": 4,
+    "WaterSensorDigital": 1,
+    "SoundSensor": 4,
     "Relay": 1,
     "Servo": 2,
     "LEDStrip": 2,
@@ -27,11 +30,13 @@ DEFAULT_PORTS = {
 
 i2c = machine.I2C(scl=machine.Pin(5), sda=machine.Pin(4))
 
-class GroveDevice:
+class GroveDevice(object):
     
     def __init__(self, port=None):
         if port is None:
             self.port = DEFAULT_PORTS[self.__type__()]
+        else:
+            self.port = port
         self.pin = machine.Pin(PORT_MAPPING[self.port])
 
     def __repr__(self):
@@ -47,7 +52,7 @@ class GroveI2CDevice(GroveDevice):
         self.i2c = i2c
 
     def check_port(self, port):
-        if self.port != 6:
+        if port != 6:
             raise AttributeError("{0} goes only to Port 6.")
 
 class GroveAnalogDevice(GroveDevice):
@@ -57,5 +62,5 @@ class GroveAnalogDevice(GroveDevice):
         self.pin = machine.ADC(0)
 
     def check_port(self, port):
-        if self.port != 4:
+        if port != 4:
             raise AttributeError("{0} goes only to Port 4.")

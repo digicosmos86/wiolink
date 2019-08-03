@@ -19,12 +19,40 @@ tones = {
 class Display:
     pass
 
+class Scaler(object):
+
+    def __init__(self, source, target):
+        assert len(source)==2, "'source' should be a length 2 tuple or list"
+        assert len(target)==2, "'target' should be a length 2 tuple or list"
+        self.x1, self.y1 = source
+        self.x2, self.y2 = target
+
+    def scale(self, val):
+        return self.x2 + (val - self.x1) / (self.y1 - self.x1) * (self.y2 - self.x2)
+
+    def int_scale(self, val):
+        return int(self.scale(val))
+
+class ColorScaler(Scaler):
+
+    def __init__(self, source, target):
+        Scaler.__init__(self, source, target)
+        
+    def scale(self, val, x2, y2):
+        return x2 + (val - self.x1) / (self.y1 - self.x1) * (y2 - x2)
+    
+    def int_scale(self, val, x2, y2):
+        return int(self.scale(val, x2, y2))
+
+    def scale_color(self, val):
+        return [self.int_scale(val, self.x2[i], self.y2[i]) for i in range(3)]
+
 
 class GroveOutputDevice(GroveDevice):
 
     def __init__(self, port):
-        GroveDevice.__init__(self, port)
         self.check_port(port)
+        GroveDevice.__init__(self, port)
 
     def check_port(self, port):
         if port == 3:
@@ -66,8 +94,8 @@ class OLEDScreen(GroveI2CDevice, Display, SSD1306_I2C):
         self.write_line(line, message)
         self.show()
 
-    def set_input(self, sensor, line):
-        reading = sensor.set_output(self, line)
+    def show_sensor_data(self, sensor, line):
+        reading = sensor.show_data(self, line)
         return reading
 
 class LEDStrip(GroveDevice, NeoPixel):
@@ -76,6 +104,8 @@ class LEDStrip(GroveDevice, NeoPixel):
         NeoPixel.__init__(self, pin=self.pin, n=n)
         self._on = False
         self._state = 0
+        self.input = None
+        self.cscaler = None
 
     def on(self):
         blue_modulo = 3
@@ -114,6 +144,9 @@ class LEDStrip(GroveDevice, NeoPixel):
         finally:
             self.off()
 
+    def update(self):
+        self.write()
+
     def cycle(self, interval_ms=25, color=(255, 255, 255), times=4):
         try:
             self.off()
@@ -131,7 +164,7 @@ class LEDStrip(GroveDevice, NeoPixel):
             self.off()
             for i in range(times * self.n):
                 for j in range(self.n):
-                    NeoPixel.__setitem__(self, j, (0, 0, 128))
+                    NeoPixel.__setitem__(self, j, color)
                 if (i // self.n) % 2 == 0:
                     NeoPixel.__setitem__(self, i % self.n, (0, 0, 0))
                 else:
@@ -163,6 +196,18 @@ class LEDStrip(GroveDevice, NeoPixel):
             self.fade()
         finally:
             self.off()
+
+    def set_input(self, input, low=0, high=500, color_x=(0, 0, 0), color_y=(255, 255, 255)):
+        self.input = input
+        self.cscaler = ColorScaler([low, high], [color_x, color_y])
+
+    def refresh(self):
+        if not input:
+            raise ValueError("Please specify an input sensor")
+
+        self.fill(self.cscaler.scale_color(self.input.get_data()))
+        self.write()
+        
 
 
 class LED(GroveOutputDevice):
@@ -205,6 +250,7 @@ class Servo(GroveOutputDevice):
         GroveOutputDevice.__init__(self, port)
         self.servo = PWM(self.pin, duty=self._degree2duty(position), freq=50)
         self.position = position
+        self.scaler = Scaler((0, 180), (35, 132))
 
     def set_position(self, degree):
         self.servo.duty(self._degree2duty(degree))
@@ -213,10 +259,10 @@ class Servo(GroveOutputDevice):
     def get_position(self):
         return self.position
 
-    def _degree2duty(self, degree, start=35, end=132):
+    def _degree2duty(self, degree):
         if degree < 0 or degree > 180:
             raise ValueError("Please choose a degree between 0 and 180")
-        return int(start + (end - start) * (degree / 180))
+        return self.scaler.int_scale(degree)
 
 
 class Relay(GroveOutputDevice):

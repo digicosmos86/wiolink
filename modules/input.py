@@ -144,18 +144,9 @@ class WaterTempSensor(GroveDevice, Displayable):
 
 
 class DistanceSensor(GroveDevice):
-    """
-    Driver to use the GroveUltrasonic Ranger.
-    The sensor range is between 2cm and 4m with resolution of 1cm.
-    The timeouts are returned as 0.
-    """
     
     def __init__(self, port=None, timeout=500*2*30):
         GroveDevice.__init__(self, port)
-        """
-        timeout: Timeout in microseconds to listen to echo pin. 
-        By default is based in sensor limit range (4m)
-        """
         self.timeout = timeout
         self.pin.init(mode=Pin.OUT, pull=None)
         self.pin.value(0)
@@ -166,18 +157,15 @@ class DistanceSensor(GroveDevice):
     def _pulse_in(self):
         begin = ticks_us()
 
-        # wait for any previous pulse to end
         while self.pin.value() == 1:
             if self._micros_diff(begin, ticks_us()) >= self.timeout:
                 return 0
 
-        # wait for the pulse to start
         while self.pin.value() != 1:
             if self._micros_diff(begin, ticks_us()) >= self.timeout:
                 return 0
             pulse_begin = ticks_us()
 
-        # wait for the pulse to stop
         while self.pin.value() == 1:
             if self._micros_diff(begin, ticks_us()) >= self.timeout:
                 return 0
@@ -187,9 +175,7 @@ class DistanceSensor(GroveDevice):
 
 
     def _measure(self):
-        """
-        Send the pulse to the sensor
-        """
+
         self.pin.init(mode=Pin.OUT)
         self.pin.value(0)
         sleep_us(2)
@@ -200,10 +186,7 @@ class DistanceSensor(GroveDevice):
         return self._pulse_in()
 
     def get_distance(self, digits=2, cm=False):
-        """
-        Get the distance in inches (default) or centimeters.
-        If the method returns 0, either an error has happened, or measurement timed out.
-        """
+
         pulse_time = self._measure()
 
         if pulse_time == 0:
@@ -247,3 +230,59 @@ class MotionSensor(GroveDevice):
     def on_reset(self, callback):
         self.pin.irq(trigger=Pin.IRQ_FALLING, handler=callback)
 
+
+class WaterSensorDigital(GroveDevice):
+    def __init__(self, port=None):
+        GroveDevice.__init__(self, port)
+        self.pin.init(mode=Pin.IN, pull=None)
+
+    def is_wet(self):
+        return True if self.pin.value() == 0 else False
+
+    def is_dry(self):
+        return True if self.pin.value() == 1 else False
+
+    def on_dry(self, callback):
+        self.pin.irq(trigger=Pin.IRQ_RISING, handler=callback)
+
+    def on_wet(self, callback):
+        self.pin.irq(trigger=Pin.IRQ_FALLING, handler=callback)
+
+
+class WaterSensorAnalog(GroveAnalogDevice, Displayable):
+    def __init__(self, port=4):
+        GroveAnalogDevice.__init__(self, port)
+
+    def get_moisture(self):
+        return self.pin.read()
+
+    def get_data(self):
+        return self.pin.read()
+
+    def show_data(self, screen, line, text=None):
+        self.check_display(screen)
+        reading = self.pin.read()
+        if text is None:
+            msg = ">{0}: {1}".format(self.port, reading)
+        else:
+            msg = "{0}: {1}".format(text, reading)
+        screen.show_line(line, msg)
+        return reading
+
+
+def WaterSensor(port=None):
+    if port == 4:
+        return WaterSensorAnalog()
+    else:
+        return WaterSensorDigital(port)
+
+
+class SoundSensor(GroveAnalogDevice):
+    def __init__(self, port=4):
+        GroveAnalogDevice.__init__(self, port)
+
+    def get_sound_level(self):
+        return self.pin.read()
+
+    def get_data(self):
+        return self.pin.read()

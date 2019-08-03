@@ -1,19 +1,17 @@
 #!/bin/bash
 
 cd ~/micropython/ports/esp8266
-git submodule init
+git submodule update --init
 
-cp -r ~/wiolink/modules* ~/micropython/ports/esp8266/modules
+cp -r ~/wiolink/modules/* ~/micropython/ports/esp8266/modules
 
 if [ -d ~/micropython/ports/esp8266/scripts ] ; then
     mkdir ~/micropython/ports/esp8266/scripts
 fi
 
-cp ~/wiolink/scripts/boot.py ~/micropython/ports/esp8266/scripts
+cp ~/wiolink/scripts/boot.py ~/micropython/ports/esp8266/scripts/
 
-cd ~/micropython/ports/esp8266
-
-make
+make FLASH_SIZE=32m
 
 if [ -d ~/wiolink/micropython-1.11-wiolink-clean.bin ] ; then
     rm ~/wiolink/micropython-1.11-wiolink-clean.bin
