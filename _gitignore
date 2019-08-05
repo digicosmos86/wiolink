@@ -1,0 +1,9 @@
+.idea
+test/*
+test
+*.log
+.vscode/*
+.vscode
+ssh.EXE.stackdump
+micropython/*
+micropython
