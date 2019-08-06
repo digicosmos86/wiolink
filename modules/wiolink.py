@@ -47,8 +47,8 @@ class GroveDevice(object):
 
 class GroveI2CDevice(GroveDevice):
     def __init__(self, port=6):
-        self.check_port(port)
         GroveDevice.__init__(self, port)
+        self.check_port(port)
         self.i2c = i2c
 
     def check_port(self, port):
@@ -57,8 +57,8 @@ class GroveI2CDevice(GroveDevice):
 
 class GroveAnalogDevice(GroveDevice):
     def __init__(self, port=4):
-        self.check_port(port)
         GroveDevice.__init__(self, port)
+        self.check_port(port)
         self.pin = machine.ADC(0)
 
     def check_port(self, port):

@@ -51,8 +51,8 @@ class ColorScaler(Scaler):
 class GroveOutputDevice(GroveDevice):
 
     def __init__(self, port):
-        self.check_port(port)
         GroveDevice.__init__(self, port)
+        self.check_port(port)
 
     def check_port(self, port):
         if port == 3:
@@ -268,16 +268,16 @@ class Servo(GroveOutputDevice):
 class Relay(GroveOutputDevice):
     def __init__(self, port=None):
         GroveOutputDevice.__init__(self, port)
-        self.relay = self.pin.init(mode = Pin.OUT)
+        self.pin.init(mode = Pin.OUT)
         
     def on(self):
-        self.relay.on()
+        self.pin.value(1)
 
     def off(self):
-        self.relay.off()
+        self.pin.vaule(0)
 
     def get_status(self):
-        return self.relay.value()
+        return self.pin.value()
 
 
 class Buzzer(GroveOutputDevice):
