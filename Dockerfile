@@ -1,7 +1,11 @@
 FROM ubuntu:16.04
 
-RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
-RUN apt-get install -y make autoconf automake libtool gcc g++ gperf flex bison texinfo gawk ncurses-dev libexpat-dev python python-serial sed git unzip bash build-essential bzip2 vim wget libtool-bin screen sudo curl zsh help2man unrar-free libreadline-dev libffi-dev pkg-config libtool-bin python-dev
+RUN apt-get update && \
+  apt-get install -y software-properties-common vim && \
+  add-apt-repository ppa:jonathonf/python-3.6
+
+
+RUN apt-get install -y make autoconf automake libtool gcc g++ gperf flex bison texinfo gawk ncurses-dev libexpat-dev python python-serial sed git unzip bash build-essential bzip2 vim wget libtool-bin screen sudo curl zsh help2man unrar-free libreadline-dev libffi-dev pkg-config libtool-bin python-dev  python3 python3-dev python3-pip
 
 ## Create esp user and install zsh
 RUN useradd -ms `which zsh` esp

@@ -24,7 +24,7 @@ class OledScreen(Display, SSD1306_I2C):
 
     def _check_max_line(self, line):
         if line > self.max_line:
-            raise ValueError("The {0}x{1} display can only support {2} lines of texts".format(self.width, self.height, max_line))
+            raise ValueError("The {0}x{1} display can only support {2} lines of texts".format(self.width, self.height, self.max_line))
 
     def clear_line(self, line):
         self._check_max_line(line)
@@ -123,10 +123,7 @@ class GrowLight(Display, NeoPixel):
 class Led(Display):
     def __init__(self, port=DEFAULT_PORTS["Led"]):
         Display.__init__(self, "Led", port)
-        if on:
-            self.led = PWM(Pin(PORT_MAPPING[port]), freq=50, duty=1023)
-        else:
-            self.led = PWM(Pin(PORT_MAPPING[port]), freq=50, duty=0)
+        self.led = PWM(Pin(PORT_MAPPING[port]), freq=50, duty=0)
         self._on = False
     
     def on(self, fade=False, duration=1):

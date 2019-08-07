@@ -12,9 +12,12 @@ cp {wio_link,ssd1306,tsl2561,sensors,actuators,displays,urequests,inisetup,iot}.
 #cp micropython/tools/{upip,upip_utarfile}.py micropython/ports/esp8266/modules
 mkdir ~/micropython/ports/esp8266/scripts
 cp boot.py ~/micropython/ports/esp8266/scripts
-rm ~/micropython/ports/esp8266/scripts/main.py
-cd ~/micropython/ports/esp8266
-make axtls
+rm -f ~/micropython/ports/esp8266/scripts/main.py
+cd ~/micropython
+make -C mpy-cross
+cp mpy-cross/mpy-cross  /home/esp/esp-open-sdk/xtensa-lx106-elf/bin/
+cd ports/esp8266
+#make axtls
 make
-rm ~/wiolink/micropython-1.9.3-wiolink-clean.bin
+rm -f ~/wiolink/micropython-1.9.3-wiolink-clean.bin
 cp build/firmware-combined.bin ~/wiolink/micropython-1.9.3-wiolink-clean.bin
