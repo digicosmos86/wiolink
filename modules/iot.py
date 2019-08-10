@@ -2,7 +2,6 @@ import network
 import time
 import urequests
 import re
-from sensors import Sensor
 from utime import ticks_ms
 
 class WiFi:
@@ -60,7 +59,7 @@ class NodeRed:
         return "Node-RED at {0}:{1}".format(self.ip, self.port)
 
 
-class BcServer(NodeRed):
+class BCServer(NodeRed):
     
     def __init__(self, team):
         NodeRed.__init__(self, ip="ts.bc.edu", port=1880)
@@ -95,18 +94,18 @@ class BcServer(NodeRed):
             self.last = ticks_ms()
         
     def _sensor_to_data(self, sensor):
-        if not isinstance(sensor, Sensor):
-            raise ValueError("One or more objects are not Sensors!")
-        if sensor.type == "TempSensor":
+        if sensor.__type___() == "TempSensor":
             t, h = sensor.get_data()
             self.data["temperature"] = t
             self.data["humidity"] = h
-        elif sensor.type == "MoistureSensor":
+        elif sensor.__type__() == "MoistureSensor":
             self.data["soil"] = sensor.get_data()
-        elif sensor.type == "LightSensor":
+        elif sensor.__type__() == "LightSensor":
             self.data["lux"] = sensor.get_data()
-        elif sensor.type == "WaterTempSensor":
-            self.data["water temperature"] = sensor.get_data()
+        elif sensor.__type__() == "WaterTempSensor":
+            self.data["watertemp"] = sensor.get_data()
+        else:
+            raise TypeError("Please check the 'sensor' parameter. One or more of the objects passed are not supported.")
     
     def __repr__(self):
         return "BC Server at {0}:{1}".format(self.ip, self.port)
