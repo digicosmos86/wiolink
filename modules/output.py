@@ -248,9 +248,9 @@ class Servo(GroveOutputDevice):
 
     def __init__(self, port=None, position=0):
         GroveOutputDevice.__init__(self, port)
+        self.scaler = Scaler((0, 180), (35, 132))
         self.servo = PWM(self.pin, duty=self._degree2duty(position), freq=50)
         self.position = position
-        self.scaler = Scaler((0, 180), (35, 132))
 
     def set_position(self, degree):
         self.servo.duty(self._degree2duty(degree))
