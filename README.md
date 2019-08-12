@@ -2,9 +2,11 @@
 
 This repository contains source code and all other files required to build a custom firmware with the GrowThings package for the WioLink development board. For instruction on how to flash the firmware and how to use the library, please refer to [The GrowThings Documentation](http://growthings.readthedocs.io).
 
-## Getting Started
+We recommend that you follow the instruction below to [build the firmware with Docker](#Getting-Started-with-Docker). Some operating systems do not support Docker (e.g. Windows 10 Home). If that is the case, then please follow the [Getting Started with Vagrant](#Getting-Started-with-Vagrant) section to build the firmware in a virtual machine (VM).
 
-The following instruction will guide you through the necessary steps to build the binary file of the firmware. You can then flash the firmware to the board.
+## Getting Started with Docker
+
+The following instruction will guide you through the necessary steps to build the binary file of the firmware within a Docker container. You can then flash the firmware to the board.
 
 ### Step 1. Install Docker
 
@@ -57,7 +59,7 @@ Then there is no need to run this file again. Just run `build.sh` whenever any c
 bash build.sh
 ```
 
-This will recompile the firmware. Once complete, the latest version of the firmware can be found under the build folder of the repository.
+This will recompile the firmware. Once complete, the latest version of the firmware can be found under the `build` folder of the repository.
 
 ### Step 6. Reuse the container and rebuild the firmware
 
@@ -72,3 +74,66 @@ If the container based on image `espbuild` is not shown in the list, the contain
 ``` bash
 docker start -i $ID
 ```
+
+## Getting Started with Vagrant
+
+The following instruction will guide you through the necessary steps to build the binary file of the firmware within a Virtual Machine. You can then flash the firmware to the board.
+
+### Step 1. Install Vagrant and Virtual Box
+
+Please follow the links below to install VirtualBox and Vagrant. After installing Vagrant, you might be prompted to restart your computer.
+
+* [Installing VirtualBox](https://www.virtualbox.org/)
+* [Installing Vagrant](https://www.vagrantup.com/downloads.html)
+
+### Step 2. Clone this repo
+
+Git is required for this process. Please make sure you have git installed on your computer, then in your system terminal type:
+
+``` bash
+git clone https://github.com/digicosmos86/wiolink
+cd wiolink
+```
+
+### Step 3. Provision the VM with Vagrant
+
+Use the following command to provision the VM:
+
+``` bash
+vagrant up
+```
+
+Vagrant will automatically use the information in the `Vagrantfile` to provision the VM and build the toolchain for compiling the firmware. This is a fairly long process that should take around 30 minutes.
+
+### Step 4. SSH into the VM
+
+After the VM has been provisioned, use the following commands to SSH into the VM:
+
+``` bash
+vagrant ssh
+cd ~/wiolink
+```
+
+Please remember the second line of the command to set the current working directory to `~/wiolink`.
+
+### Step 5. Build the firmware
+
+The two shell script will handle all the procedures needed to build the firmware. When logged into the container for the first time, run the `init.sh` file.
+
+``` bash
+bash init.sh
+```
+
+Then there is no need to run this file again. Just run `build.sh` whenever any changes are made to the source code.
+
+``` bash
+bash build.sh
+```
+
+This will recompile the firmware. Once complete, the latest version of the firmware can be found under the `build` folder of the repository.
+
+### Step 6. Shutting down and/or Destroy the VM
+
+After building the firmware, type `exit` to exit `ssh`.
+
+The VM will still be up and running. Use `vagrant halt` to shutdown the VM and `vagrant up` to start it again. If there is absolutely no need for the VM, you can use `vagrant destroy` to permanently delete the VM.
