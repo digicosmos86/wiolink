@@ -94,7 +94,7 @@ class BCServer(NodeRed):
             self.last = ticks_ms()
         
     def _sensor_to_data(self, sensor):
-        if sensor.__type___() == "TempSensor":
+        if sensor.__type___() == "TempHumSensor":
             t, h = sensor.get_data()
             self.data["temperature"] = t
             self.data["humidity"] = h
