@@ -1,8 +1,7 @@
 ## import libraries
 
-from sensors import TemperatureSensorPro, LightSensor
-from actuators import Relay, Servo
-from displays import OLEDScreen, LEDStrip
+from input import TempHumSensor, LightSensor
+from output import Relay, Servo, OLEDScreen, LEDStrip
 import time
 
 print("Starting...")
@@ -18,7 +17,7 @@ LUX_THRESHOLD = 100
 
 relay = Relay(1)
 servo = Servo(2, position=175)
-temp_sensor = TemperatureSensorPro(3)
+temp_sensor = TempHumSensor(3)
 gl = LEDStrip(5)
 light_sensor = LightSensor(6)
 screen = OLEDScreen(6)
@@ -27,8 +26,8 @@ screen = OLEDScreen(6)
 
 while True:
 
-    t, h = temp_sensor.set_output(screen, 1)
-    l = light_sensor.set_output(screen, 2)
+    t, h = temp_sensor.show_data(screen, 1)
+    l = light_sensor.show_data(screen, 2)
 
     if t > TEMP_THRESHOLD:
         relay.on()

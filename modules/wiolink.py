@@ -11,7 +11,7 @@ PORT_MAPPING = {
 
 DEFAULT_PORTS = {
     "LightSensor": 6,
-    "TempSensor": 3,
+    "TempHumSensor": 3,
     "MoistureSensor": 4,
     "WaterTempSensor": 3,
     "DistanceSensor": 1,

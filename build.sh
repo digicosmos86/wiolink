@@ -4,12 +4,14 @@ cd ~/micropython/ports/esp8266
 git submodule update --init
 
 cp -r ~/wiolink/modules/* ~/micropython/ports/esp8266/modules
+rm -rf ~/micropython/ports/esp8266/modules/umqtt
 
-if [ -d ~/micropython/ports/esp8266/scripts ] ; then
-    mkdir ~/micropython/ports/esp8266/scripts
+if [ ! -d ~/micropython/ports/esp8266/scripts ] ; then
+    rm -rf ~/micropython/ports/esp8266/scripts
 fi
 
-cp ~/wiolink/scripts/boot.py ~/micropython/ports/esp8266/scripts/
+mkdir ~/micropython/ports/esp8266/scripts
+cp ~/wiolink/scripts/boot.py ~/micropython/ports/esp8266/scripts/boot.py
 
 make FLASH_SIZE=32m
 

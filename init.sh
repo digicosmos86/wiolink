@@ -6,8 +6,10 @@
 if [ ! -d ~/micropython ] ; then
     cd ~
     git clone https://github.com/micropython/micropython.git ~/micropython --recurse-submodules
-    cd ~wiolink
+    cd ~/wiolink
 fi
 
 cd ~/micropython
 make -C mpy-cross
+
+cd ~/wiolink

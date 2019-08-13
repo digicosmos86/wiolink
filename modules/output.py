@@ -274,7 +274,7 @@ class Relay(GroveOutputDevice):
         self.pin.value(1)
 
     def off(self):
-        self.pin.vaule(0)
+        self.pin.value(0)
 
     def get_status(self):
         return self.pin.value()

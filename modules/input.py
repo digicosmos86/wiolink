@@ -37,7 +37,7 @@ class LightSensor(GroveI2CDevice, Displayable):
         return reading
 
 
-class TempSensor(GroveDevice, Displayable):
+class TempHumSensor(GroveDevice, Displayable):
     def __init__(self, port=None, pro = True):
         GroveDevice.__init__(self, port)
         if pro:
