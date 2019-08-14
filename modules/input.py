@@ -1,7 +1,20 @@
 from machine import Pin
 from wiolink import GroveDevice, GroveI2CDevice, GroveAnalogDevice
 from utime import ticks_ms, ticks_us
-from time import sleep_ms, sleep_us
+from time import sleep, sleep_ms, sleep_us
+import ustruct
+
+CMD_START = b"\x00\x10"
+CMD_STOP = b"\x01\x04"
+CMD_INTERVAL = b"\x46\x00"
+CMD_READY = b"\x02\x02"
+CMD_READ = b"\x03\x00"
+CMD_ASC = b"\x53\x06"
+CMD_FRC = b"\x52\x04"
+CMD_TEMP_OFFSET = b"\x54\x03"
+CMD_ALTITUDE = b"\x51\x02"
+CMD_FIRMWARE = b"\xD1\x00"
+CMD_RESET = b"\xD3\x04"
 
 class Displayable:
 
@@ -286,3 +299,122 @@ class SoundSensor(GroveAnalogDevice):
 
     def get_data(self):
         return self.pin.read()
+
+
+class CO2Sensor(GroveI2CDevice):
+
+    def __init__(self, port=6, address=0x61):
+        GroveI2CDevice.__init__(self, port=6)
+        self.address = address
+        if self.address not in self.i2c.scan():
+            raise OSError("Please check if the CO2 sensor is connected to Port 6 or an I2C hub")
+        self.measures = None
+        self._write(CMD_START + b"\x00\x00\x81")
+        sleep(0.5)
+
+    def _read(self, location, length):
+        self.i2c.writeto(self.address, location)
+        return self.i2c.readfrom(self.address, length)
+
+    def _write(self, command, data=None):
+        if data:
+            pass
+
+        self.i2c.writeto(self.address, command)
+
+    def _crc8(self, data):
+        crc = 0xFF
+
+        for elem in data:
+            crc ^= elem
+
+            for shift in range(8):
+                if (crc & 0x80):
+                    crc = ((crc << 1) ^ 0x31) % 0x100
+                else:
+                    crc = crc << 1
+
+        return crc
+
+    def check_crc(self, data):
+        for offset in range(0, len(data), 3):
+            if not data[offset+2] == self._crc8(data[offset:offset+2]):
+                print(offset, data[offset:offset+3])
+                return False
+        return True
+
+    def read(self):
+
+        data_raw = self._read(CMD_READ, 18)
+        data_crc = self.check_crc(data_raw)
+        if not data_crc:
+            return False
+
+        co2 = ustruct.unpack(">f", data_raw[0:2] + data_raw[3:5])[0]
+        temp = ustruct.unpack(">f", data_raw[6:8] + data_raw[9:11])[0]
+        hum = ustruct.unpack(">f", data_raw[12:14] + data_raw[15:17])[0]
+
+        return co2, temp, hum
+
+    def get_temp(self, celsius=False):
+        self.__check_refresh()
+        if celsius:
+            return self.measures[1]
+        return self.measures[1] * 1.8 + 32
+
+    def get_humidity(self):
+        self.__check_refresh()
+        return self.measures[2]
+
+    def get_CO2(self):
+        self.__check_refresh()
+        return self.measures[0]
+
+    def get_status_ready(self):
+        ready_raw = self._read(CMD_READY, 3)
+        ready_crc = self.check_crc(ready_raw)
+        ready = ustruct.unpack(">H", ready_raw[0:2])[0]
+        return ready and ready_crc
+
+    def set_measurement_interval(self, interval):
+        bint = ustruct.pack('>H', interval)
+        crc = self._crc8(bint)
+        data = bint + bytes([crc])
+        self.i2c.writeto_mem(self.address, 0x4600, data, addrsize=16)
+
+    def get_measurement_interval(self):
+        bint = self.i2c.readfrom_mem(self.address, 0x4600, 3, addrsize=16)
+        self.check_crc(bint)
+        return ustruct.unpack('>H', bint)[0]
+
+    def __check_refresh(self):
+        if self.get_status_ready():
+            self.measures = self.read()
+        else:
+            if self.measures is None:
+                print("Sensor initializing. Please wait.")
+                while not self.get_status_ready():
+                    sleep(1)
+                self.measures = self.read()
+
+    def get_data(self):
+        self.__check_refresh()
+        return self.measures
+
+    def send_data(self, screen, line, line2=None, text1=None, text2=None):
+        Displayable.check_display(screen)
+        reading = self.get_data()
+        if text1 is None:
+            msg1 = ">{0}: {1:.2f} ppm".format(self.port, reading[0])
+        else:
+            msg1 = "{0}: {1:.2f} ppm".format(text1, reading[0])
+        if text2 is None:
+            msg2 = ">{0}: {1:.1f}F {2:.1f}%".format(self.port, reading[1], reading[2])
+        else:
+            msg2 = "{0}: {1:.1f}F {2:.1f}%".format(text2, reading[1], reading[2])
+        screen.show_line(line, msg1)
+        if line2 is None:
+            screen.show_line(line+1, msg2)
+        else:
+            screen.show_line(line2, msg2)
+        return reading

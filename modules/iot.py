@@ -98,6 +98,11 @@ class BCServer(NodeRed):
             t, h = sensor.get_data()
             self.data["temperature"] = t
             self.data["humidity"] = h
+        elif sensor.__type___() == "CO2Sensor":
+            c, t, h = sensor.get_data()
+            self.data["co2"] = c
+            self.data["temperature"] = t
+            self.data["humidity"] = h
         elif sensor.__type__() == "MoistureSensor":
             self.data["soil"] = sensor.get_data()
         elif sensor.__type__() == "LightSensor":

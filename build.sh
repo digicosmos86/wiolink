@@ -5,6 +5,7 @@ git submodule update --init
 
 cp -r ~/wiolink/modules/* ~/micropython/ports/esp8266/modules
 rm -rf ~/micropython/ports/esp8266/modules/umqtt
+rm ~/micropython/ports/esp8266/modules/{apa102,webrepl,webrepl_setup,upip,upip_utarfile}.py
 
 if [ ! -d ~/micropython/ports/esp8266/scripts ] ; then
     rm -rf ~/micropython/ports/esp8266/scripts

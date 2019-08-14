@@ -19,13 +19,13 @@ DEFAULT_PORTS = {
     "WaterSensorAnalog": 4,
     "WaterSensorDigital": 1,
     "SoundSensor": 4,
+    "CO2Sensor": 6,
     "Relay": 1,
     "Servo": 2,
     "LEDStrip": 2,
     "OLEDScreen": 6,
     "LED": 1,
     "Button": 2,
-    "Buzzer": 2
 }
 
 i2c = machine.I2C(scl=machine.Pin(5), sda=machine.Pin(4))
