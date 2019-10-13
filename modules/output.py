@@ -201,10 +201,7 @@ class LEDStrip(GroveDevice, NeoPixel):
 class LED(GroveOutputDevice):
     def __init__(self, port=None):
         GroveOutputDevice.__init__(self, port)
-        if self._on:
-            self.led = PWM(self.pin, freq=50, duty=1023)
-        else:
-            self.led = PWM(self.pin, freq=50, duty=0)
+        self.led = PWM(self.pin, freq=50, duty=0)
         self._on = False
     
     def on(self, fade=False, duration=1):
